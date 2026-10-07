@@ -12,7 +12,7 @@
 -- ==============================================================================
 
 local ZypheraxUI = {}
-ZypheraxUI.Version = "Enterprise 3.5.0"
+ZypheraxUI.Version = "Enterprise 3.6.0"
 ZypheraxUI.Flags = {}
 ZypheraxUI.Controls = {}
 
@@ -235,6 +235,21 @@ function U.New(class, props)
             pcall(function() inst[k] = v end)
         end
     end
+    -- // ANTI-OVERFLOW SAFETY NET \ --
+    -- Label satu baris otomatis dipotong rapi (AtEnd) agar tulisan tidak
+    -- pernah menabrak elemen lain atau keluar dari kotaknya. Label yang
+    -- memang multibaris (AutomaticSize.Y + TextWrapped) dibiarkan utuh.
+    pcall(function()
+        if class == "TextLabel" or class == "TextButton" or class == "TextBox" then
+            local autoY   = props and (props.AutomaticSize == Enum.AutomaticSize.Y or props.AutomaticSize == Enum.AutomaticSize.XY)
+            local wrapped = props and props.TextWrapped == true
+            local scaled  = props and props.TextScaled == true
+            local hasTrunc = props and props.TextTruncate ~= nil
+            if not autoY and not wrapped and not scaled and not hasTrunc then
+                inst.TextTruncate = Enum.TextTruncate.AtEnd
+            end
+        end
+    end)
     if props and props.Parent then inst.Parent = props.Parent end
     return inst
 end
@@ -316,9 +331,10 @@ local function ensureNotifGui()
     local container = U.New("Frame", {
         Name = "Container",
         AnchorPoint = Vector2.new(1, 1),
-        Size = UDim2.new(0, 340, 1, -24),
+        Size = UDim2.new(0, 330, 1, -24),
         Position = UDim2.new(1, -16, 1, -16),
         BackgroundTransparency = 1,
+        ClipsDescendants = false,
         Parent = NotifGui
     })
     U.New("UIListLayout", {
@@ -419,7 +435,8 @@ function ZypheraxUI:Notify(cfg)
     })
 
     local head = U.New("Frame", {
-        Size = UDim2.new(1, 0, 0, 16),
+        Name = "Head",
+        Size = UDim2.new(1, 0, 0, 18),
         BackgroundTransparency = 1,
         LayoutOrder = 1,
         Parent = body
@@ -439,9 +456,10 @@ function ZypheraxUI:Notify(cfg)
         TextSize = 13,
         TextColor3 = T.Text,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 16, 0, 0),
-        Size = UDim2.new(1, -16, 1, 0),
+        Position = UDim2.new(0, 18, 0, 0),
+        Size = UDim2.new(1, -18, 1, 0),
         TextXAlignment = Enum.TextXAlignment.Left,
+        TextYAlignment = Enum.TextYAlignment.Center,
         TextTruncate = Enum.TextTruncate.AtEnd,
         Parent = head
     })
@@ -458,6 +476,8 @@ function ZypheraxUI:Notify(cfg)
             AutomaticSize = Enum.AutomaticSize.Y,
             TextWrapped = true,
             TextXAlignment = Enum.TextXAlignment.Left,
+            TextYAlignment = Enum.TextYAlignment.Top,
+            TextTruncate = Enum.TextTruncate.None,
             LayoutOrder = 2,
             Parent = body
         })
