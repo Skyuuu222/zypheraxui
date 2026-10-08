@@ -531,8 +531,6 @@ function ZypheraxUI:Watermark(cfg)
         local core = GetCore()
         local oldWm = core:FindFirstChild("ZypheraxWatermarkGui")
         if oldWm then oldWm:Destroy() end
-        local oldFt = core:FindFirstChild("ZypheraxFloatingToggle")
-        if oldFt then oldFt:Destroy() end
     end)
     return {
         Set = function() end,
@@ -832,7 +830,7 @@ function ZypheraxUI:CreateWindow(config)
     -- // ELEGANT TOP SEARCH ENGINE \ --
     local searchBarFrame = U.New("Frame", {
         Name = "TopSearchBar",
-        Size = UDim2.new(1, -20, 0, 34),
+        Size = UDim2.new(0, 320, 0, 32),
         Position = UDim2.new(0, 10, 0, 8),
         BackgroundColor3 = T.Surface2,
         BackgroundTransparency = 0.2,
@@ -858,6 +856,7 @@ function ZypheraxUI:CreateWindow(config)
 
     local searchInput = U.New("TextBox", {
         Name = "SearchInput",
+        Text = "",
         PlaceholderText = "Cari fitur...",
         Font = T.FontRegular,
         TextSize = 11,
@@ -901,6 +900,77 @@ function ZypheraxUI:CreateWindow(config)
         end
     end)
 
+    -- // ROUND FLOATING TOGGLE (re-open UI while hidden) \ --
+    local ORB_URL = "https://files.catbox.moe/u7oy89.png"
+    local ftGui = nil
+    local function ensureOrbToggle()
+        pcall(function()
+            if ftGui and ftGui.Parent then return end
+            local old = core:FindFirstChild("ZypheraxFloatingToggle")
+            if old then old:Destroy() end
+            ftGui = U.New("ScreenGui", {
+                Name = "ZypheraxFloatingToggle",
+                DisplayOrder = 200,
+                ResetOnSpawn = false,
+                ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+                Parent = core
+            })
+            local ftBtn = U.New("TextButton", {
+                Name = "OrbToggle",
+                Text = "",
+                AutoButtonColor = false,
+                Size = UDim2.fromOffset(46, 46),
+                Position = UDim2.new(1, -66, 0, 18),
+                BackgroundColor3 = Color3.fromRGB(16, 18, 24),
+                ZIndex = 10,
+                Parent = ftGui
+            })
+            U.Corner(ftBtn, UDim.new(1, 0))
+            local ftStroke = U.Stroke(ftBtn, T.Accent, 2, 0.15)
+            -- Fallback: gradient sphere di belakang logo
+            local ftFallback = U.New("Frame", {
+                Name = "OrbFallback",
+                BackgroundColor3 = Color3.fromRGB(0, 170, 255),
+                Size = UDim2.fromOffset(34, 34),
+                Position = UDim2.fromOffset(6, 6),
+                ZIndex = 10,
+                Parent = ftBtn
+            })
+            U.Corner(ftFallback, UDim.new(1, 0))
+            U.New("UIGradient", {
+                Color = ColorSequence.new(Color3.fromRGB(0, 220, 255), Color3.fromRGB(90, 70, 255)),
+                Rotation = 45,
+                Parent = ftFallback
+            })
+            -- Logo orb (foto yang sama dipakai webhook)
+            local ftImg = U.New("ImageLabel", {
+                Name = "OrbLogo",
+                Image = ORB_URL,
+                BackgroundTransparency = 1,
+                Size = UDim2.fromOffset(34, 34),
+                Position = UDim2.fromOffset(6, 6),
+                ZIndex = 11,
+                Parent = ftBtn
+            })
+            U.Corner(ftImg, UDim.new(1, 0))
+            track(ftBtn.MouseEnter:Connect(function()
+                U.Tween(ftStroke, 0.15, { Color = Color3.fromRGB(0, 220, 255), Thickness = 3 })
+            end))
+            track(ftBtn.MouseLeave:Connect(function()
+                U.Tween(ftStroke, 0.15, { Color = T.Accent, Thickness = 2 })
+            end))
+            track(ftBtn.MouseButton1Click:Connect(function()
+                Win:ToggleVisibility(true)
+            end))
+        end)
+    end
+    local function syncOrb(hidden)
+        pcall(function()
+            if hidden then ensureOrbToggle() end
+            if ftGui and ftGui.Parent then ftGui.Enabled = (hidden == true) end
+        end)
+    end
+
     -- Visibility Toggle Method
     function Win:ToggleVisibility(visible)
         if visible == nil then visible = not gui.Enabled end
@@ -909,10 +979,12 @@ function ZypheraxUI:CreateWindow(config)
             main.Size = UDim2.fromScale(0.95, 0.95)
             main.BackgroundTransparency = 0.4
             U.Tween(main, 0.28, { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 0.04 }, Enum.EasingStyle.Quart)
+            syncOrb(false)
         else
             U.Tween(main, 0.2, { Size = UDim2.fromScale(0.95, 0.95), BackgroundTransparency = 1 }, Enum.EasingStyle.Quart).Completed:Connect(function()
                 gui.Enabled = false
             end)
+            syncOrb(true)
         end
     end
 
@@ -1710,7 +1782,8 @@ function ZypheraxUI:CreateWindow(config)
 
                 -- Search box ("Cari save...")
                 local searchBox = U.New("TextBox", {
-                    PlaceholderText = "Search Saves Loader...",
+                    Text = "",
+                    PlaceholderText = "Cari save...",
                     Font = T.FontRegular,
                     TextSize = 11,
                     TextColor3 = T.Text,
@@ -1754,7 +1827,8 @@ function ZypheraxUI:CreateWindow(config)
 
                 -- Input box ("Nama save...")
                 local nameInput = U.New("TextBox", {
-                    PlaceholderText = "Enter save name...",
+                    Text = "",
+                    PlaceholderText = "Nama save...",
                     Font = T.FontRegular,
                     TextSize = 11,
                     TextColor3 = T.Text,
