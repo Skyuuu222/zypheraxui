@@ -832,8 +832,8 @@ function ZypheraxUI:CreateWindow(config)
     -- // ELEGANT TOP SEARCH ENGINE \ --
     local searchBarFrame = U.New("Frame", {
         Name = "TopSearchBar",
-        Size = UDim2.new(1, -20, 0, 36),
-        Position = UDim2.new(0, 10, 0, 10),
+        Size = UDim2.new(1, -20, 0, 34),
+        Position = UDim2.new(0, 10, 0, 8),
         BackgroundColor3 = T.Surface2,
         BackgroundTransparency = 0.2,
         ZIndex = 5,
@@ -858,7 +858,7 @@ function ZypheraxUI:CreateWindow(config)
 
     local searchInput = U.New("TextBox", {
         Name = "SearchInput",
-        PlaceholderText = "Cari fitur menu (Player, Combat, ESP, Fly, Parry, Gen, Webhook)...",
+        PlaceholderText = "Cari fitur...",
         Font = T.FontRegular,
         TextSize = 11,
         TextColor3 = T.Text,
@@ -1582,9 +1582,9 @@ function ZypheraxUI:CreateWindow(config)
                     TextXAlignment = Enum.TextXAlignment.Left,
                     ZIndex = 5,
                     Parent = secContainer
+                })
                 lbl:SetAttribute("ControlName", txt)
                 table.insert(SectionObj._items, lbl)
-                })
                 U.New("UIPadding", { PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4), Parent = lbl })
                 return {
                     Set = function(_, t) lbl.Text = tostring(t) end
@@ -1708,7 +1708,7 @@ function ZypheraxUI:CreateWindow(config)
                     Parent = topRow
                 })
 
-                -- Search box ("Search Saves Loader...")
+                -- Search box ("Cari save...")
                 local searchBox = U.New("TextBox", {
                     PlaceholderText = "Search Saves Loader...",
                     Font = T.FontRegular,
@@ -1752,7 +1752,7 @@ function ZypheraxUI:CreateWindow(config)
                     Parent = saveListFrame
                 })
 
-                -- Input box ("Enter save name...")
+                -- Input box ("Nama save...")
                 local nameInput = U.New("TextBox", {
                     PlaceholderText = "Enter save name...",
                     Font = T.FontRegular,
