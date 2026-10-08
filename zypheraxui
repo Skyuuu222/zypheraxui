@@ -819,7 +819,7 @@ function ZypheraxUI:CreateWindow(config)
         Parent = footer
     })
 
-    -- // CONTENT AREA (Double Column) \ --
+    -- // CONTENT AREA (Double Column + Top Search Engine) \ --
     local contentArea = U.New("Frame", {
         Name = "ContentArea",
         Size = UDim2.new(1, -(SIDEBAR_W + 1), 1, 0),
@@ -828,6 +828,78 @@ function ZypheraxUI:CreateWindow(config)
         ZIndex = 2,
         Parent = main
     })
+
+    -- // ELEGANT TOP SEARCH ENGINE \ --
+    local searchBarFrame = U.New("Frame", {
+        Name = "TopSearchBar",
+        Size = UDim2.new(1, -20, 0, 36),
+        Position = UDim2.new(0, 10, 0, 10),
+        BackgroundColor3 = T.Surface2,
+        BackgroundTransparency = 0.2,
+        ZIndex = 5,
+        Parent = contentArea
+    })
+    U.Corner(searchBarFrame, T.CornerMd)
+    local sbStroke = U.Stroke(searchBarFrame, T.Stroke, 1, 0.2)
+    RegisterThemeColor(searchBarFrame, "BackgroundColor3", "Surface2")
+    RegisterThemeColor(sbStroke, "Color", "Stroke")
+
+    local searchIcon = U.New("TextLabel", {
+        Text = "\xF0\x9F\x94\x8D",
+        Font = T.FontRegular,
+        TextSize = 13,
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 10, 0, 0),
+        Size = UDim2.new(0, 20, 1, 0),
+        TextColor3 = T.TextMuted,
+        ZIndex = 6,
+        Parent = searchBarFrame
+    })
+
+    local searchInput = U.New("TextBox", {
+        Name = "SearchInput",
+        PlaceholderText = "Cari fitur menu (Player, Combat, ESP, Fly, Parry, Gen, Webhook)...",
+        Font = T.FontRegular,
+        TextSize = 11,
+        TextColor3 = T.Text,
+        PlaceholderColor3 = T.TextDim,
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 34, 0, 0),
+        Size = UDim2.new(1, -64, 1, 0),
+        ClearTextOnFocus = false,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 6,
+        Parent = searchBarFrame
+    })
+    RegisterThemeColor(searchInput, "TextColor3", "Text")
+    RegisterThemeColor(searchInput, "PlaceholderColor3", "TextDim")
+
+    local clearSearchBtn = U.New("TextButton", {
+        Name = "ClearSearch",
+        Text = "X",
+        Font = T.FontBold,
+        TextSize = 11,
+        TextColor3 = T.TextMuted,
+        BackgroundTransparency = 1,
+        Position = UDim2.new(1, -28, 0, 0),
+        Size = UDim2.new(0, 24, 1, 0),
+        Visible = false,
+        ZIndex = 6,
+        Parent = searchBarFrame
+    })
+
+    pcall(function()
+        if searchInput.Focused then
+            track(searchInput.Focused:Connect(function()
+                U.Tween(sbStroke, 0.2, { Color = T.Accent, Transparency = 0 })
+            end))
+        end
+        if searchInput.FocusLost then
+            track(searchInput.FocusLost:Connect(function()
+                U.Tween(sbStroke, 0.2, { Color = T.Stroke, Transparency = 0.2 })
+            end))
+        end
+    end)
 
     -- Visibility Toggle Method
     function Win:ToggleVisibility(visible)
@@ -910,11 +982,11 @@ function ZypheraxUI:CreateWindow(config)
         })
         RegisterThemeColor(tabLbl, "TextColor3", "TextMuted")
 
-        -- Double Column Container for this Tab
+        -- Double Column Container for this Tab (Below Search Bar)
         local pageFrame = U.New("Frame", {
             Name = "Page_" .. tabName,
-            Size = UDim2.new(1, -20, 1, -20),
-            Position = UDim2.new(0, 10, 0, 10),
+            Size = UDim2.new(1, -20, 1, -62),
+            Position = UDim2.new(0, 10, 0, 52),
             BackgroundTransparency = 1,
             Visible = false,
             ZIndex = 3,
@@ -973,7 +1045,7 @@ function ZypheraxUI:CreateWindow(config)
 
         if #Win.Tabs == 0 then activateTab() end
 
-        local tabEntry = { btn = tabBtn, stroke = btnStroke, lbl = tabLbl, bar = activeBar, page = pageFrame, name = tabName }
+        local tabEntry = { btn = tabBtn, stroke = btnStroke, lbl = tabLbl, bar = activeBar, page = pageFrame, name = tabName, sections = {} }
         table.insert(Win.Tabs, tabEntry)
 
         -- // SECTION BUILDER (Zero Generic "SECTION" Text Overlaps) \ --
@@ -1049,7 +1121,8 @@ function ZypheraxUI:CreateWindow(config)
             U.New("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8), Parent = secContainer })
             U.New("UIPadding", { PaddingBottom = UDim.new(0, 10), Parent = secContainer })
 
-            local SectionObj = {}
+            local SectionObj = { _box = sectionBox, _name = displayName, _items = {} }
+            table.insert(tabEntry.sections, SectionObj)
 
             -- Header updater (Sets section title without duplicate labels)
             function SectionObj:Header(hCfg)
@@ -1095,6 +1168,8 @@ function ZypheraxUI:CreateWindow(config)
                 if flag then ZypheraxUI.Flags[flag] = toggled end
 
                 local base, stroke = makeBase(38)
+                base:SetAttribute("ControlName", nm)
+                table.insert(SectionObj._items, base)
 
                 -- Label has generous space, cannot collide with switch
                 local lbl = U.New("TextLabel", {
@@ -1171,6 +1246,8 @@ function ZypheraxUI:CreateWindow(config)
                 if flag then ZypheraxUI.Flags[flag] = value end
 
                 local base, stroke = makeBase(48)
+                base:SetAttribute("ControlName", nm)
+                table.insert(SectionObj._items, base)
 
                 -- Title top-left
                 local lbl = U.New("TextLabel", {
@@ -1285,6 +1362,8 @@ function ZypheraxUI:CreateWindow(config)
                 local isOpen  = false
 
                 local base, stroke = makeBase(36)
+                base:SetAttribute("ControlName", nm)
+                table.insert(SectionObj._items, base)
 
                 local lbl = U.New("TextLabel", {
                     Text = nm .. ": " .. tostring(selected),
@@ -1391,6 +1470,8 @@ function ZypheraxUI:CreateWindow(config)
                 local cb = type(cfg) == "table" and cfg.Callback or function() end
 
                 local base, stroke = makeBase(34, true)
+                base:SetAttribute("ControlName", nm)
+                table.insert(SectionObj._items, base)
                 local lbl = U.New("TextLabel", {
                     Text = nm,
                     Font = T.FontBold,
@@ -1431,6 +1512,8 @@ function ZypheraxUI:CreateWindow(config)
                 local cb      = cfg.Callback or function() end
 
                 local base, stroke = makeBase(36)
+                base:SetAttribute("ControlName", nm)
+                table.insert(SectionObj._items, base)
 
                 local lbl = U.New("TextLabel", {
                     Text = nm,
@@ -1466,6 +1549,16 @@ function ZypheraxUI:CreateWindow(config)
                 track(box.FocusLost:Connect(function(enter)
                     pcall(cb, box.Text, enter)
                 end))
+                pcall(function()
+                    if box.GetPropertyChangedSignal then
+                        track(box:GetPropertyChangedSignal("Text"):Connect(function()
+                            pcall(cb, box.Text, false)
+                        end))
+                    end
+                end)
+                if default and default ~= "" then
+                    pcall(cb, default, false)
+                end
 
                 return {
                     Set = function(_, v) box.Text = tostring(v) end,
@@ -1489,6 +1582,8 @@ function ZypheraxUI:CreateWindow(config)
                     TextXAlignment = Enum.TextXAlignment.Left,
                     ZIndex = 5,
                     Parent = secContainer
+                lbl:SetAttribute("ControlName", txt)
+                table.insert(SectionObj._items, lbl)
                 })
                 U.New("UIPadding", { PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4), Parent = lbl })
                 return {
@@ -1506,6 +1601,8 @@ function ZypheraxUI:CreateWindow(config)
                 local binding = false
 
                 local base, stroke = makeBase(36)
+                base:SetAttribute("ControlName", nm)
+                table.insert(SectionObj._items, base)
 
                 local lbl = U.New("TextLabel", {
                     Text = nm,
@@ -1741,8 +1838,12 @@ function ZypheraxUI:CreateWindow(config)
                     emptyLbl.Visible = (count == 0)
                 end
 
-                searchBox:GetPropertyChangedSignal("Text"):Connect(function()
-                    refreshSaveList(searchBox.Text)
+                pcall(function()
+                    if searchBox.GetPropertyChangedSignal then
+                        searchBox:GetPropertyChangedSignal("Text"):Connect(function()
+                            refreshSaveList(searchBox.Text)
+                        end)
+                    end
                 end)
 
                 -- Button Grid (2 rows of 2 buttons + 1 full button)
@@ -1864,6 +1965,78 @@ function ZypheraxUI:CreateWindow(config)
 
         return TabObj
     end
+
+    -- // SEARCH ENGINE FILTER LOGIC \ --
+    local function performGlobalSearch(query)
+        query = (query or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
+        clearSearchBtn.Visible = (query ~= "")
+        if query == "" then
+            -- Restore all sections to visible
+            for _, t in ipairs(Win.Tabs) do
+                for _, sec in ipairs(t.sections or {}) do
+                    if sec._box and sec._box.Parent then
+                        sec._box.Visible = true
+                        for _, itm in ipairs(sec._items or {}) do
+                            if itm.Parent then itm.Visible = true end
+                        end
+                    end
+                end
+            end
+            return
+        end
+
+        local firstMatchTab = nil
+        for _, t in ipairs(Win.Tabs) do
+            local tabHasMatch = false
+            for _, sec in ipairs(t.sections or {}) do
+                local secName = tostring(sec._name or ""):lower()
+                local secMatch = secName:find(query, 1, true) ~= nil
+                local anyItemMatch = false
+                for _, itm in ipairs(sec._items or {}) do
+                    local itmName = tostring(itm:GetAttribute("ControlName") or itm.Name or ""):lower()
+                    if itmName:find(query, 1, true) or secMatch then
+                        itm.Visible = true
+                        anyItemMatch = true
+                    else
+                        itm.Visible = false
+                    end
+                end
+                if secMatch or anyItemMatch then
+                    if sec._box and sec._box.Parent then sec._box.Visible = true end
+                    tabHasMatch = true
+                else
+                    if sec._box and sec._box.Parent then sec._box.Visible = false end
+                end
+            end
+            if tabHasMatch and not firstMatchTab and Win._currentTab ~= t.name then
+                firstMatchTab = t
+            end
+        end
+
+        -- If current tab has no match but another tab does, switch to matching tab
+        if firstMatchTab then
+            for _, t in ipairs(Win.Tabs) do
+                if t == firstMatchTab then
+                    t.page.Visible = true
+                    Win._currentTab = t.name
+                else
+                    t.page.Visible = false
+                end
+            end
+        end
+    end
+
+    pcall(function()
+        if searchInput.GetPropertyChangedSignal then
+            track(searchInput:GetPropertyChangedSignal("Text"):Connect(function()
+                performGlobalSearch(searchInput.Text)
+            end))
+        end
+    end)
+    track(clearSearchBtn.MouseButton1Click:Connect(function()
+        searchInput.Text = ""
+        performGlobalSearch("")
+    end))
 
     return Win
 end
