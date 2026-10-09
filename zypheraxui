@@ -1,16 +1,3 @@
--- ==============================================================================
--- ZYPHERAX UI - MODERN MACOS ENTERPRISE EDITION (v3.5)
--- Modern MacOS-Style Acrylic GUI Library for Roblox
--- Features:
---   * MacOS Traffic Lights Window Controls (Red: Close, Yellow: Minimize, Green: Maximize)
---   * Smooth, Uninterrupted Global Dragging (UIS-based, never disconnects)
---   * Dynamic Real-Time Theme Engine (Dark, Light, Midnight, Rose)
---   * Full Config Manager (Create Save, Overwrite, Delete Mode, Set/Reset Autoload)
---   * Elegant Draggable Watermark with Real-Time FPS and Minimize/Close
---   * Clean Section Architecture with Zero Generic "SECTION" Text Overlaps
---   * Anti-Collision Control Layouts (Toggles, Sliders, Dropdowns, Inputs, Buttons)
--- ==============================================================================
-
 local ZypheraxUI = {}
 ZypheraxUI.Version = "Enterprise 3.6.0"
 ZypheraxUI.Flags = {}
@@ -65,15 +52,15 @@ local Themes = {
         Surface          = Color3.fromRGB(20, 23, 31),
         Surface2         = Color3.fromRGB(26, 30, 42),
         Surface3         = Color3.fromRGB(34, 40, 56),
-        Accent           = Color3.fromRGB(0, 200, 255),
-        AccentDark       = Color3.fromRGB(0, 120, 190),
-        AccentGradient   = Color3.fromRGB(130, 120, 255),
+        Accent           = Color3.fromRGB(0, 170, 255),
+        AccentDark       = Color3.fromRGB(0, 140, 230),
+        AccentGradient   = Color3.fromRGB(0, 170, 255),
         Text             = Color3.fromRGB(242, 244, 250),
         TextMuted        = Color3.fromRGB(145, 152, 170),
         TextDim          = Color3.fromRGB(90, 96, 112),
         Stroke           = Color3.fromRGB(38, 43, 58),
         StrokeHover      = Color3.fromRGB(55, 62, 84),
-        StrokeActive     = Color3.fromRGB(0, 200, 255),
+        StrokeActive     = Color3.fromRGB(0, 170, 255),
         Success          = Color3.fromRGB(60, 215, 120),
         Warning          = Color3.fromRGB(255, 189, 46),
         Error            = Color3.fromRGB(255, 95, 86),
@@ -87,15 +74,15 @@ local Themes = {
         Surface          = Color3.fromRGB(255, 255, 255),
         Surface2         = Color3.fromRGB(238, 241, 248),
         Surface3         = Color3.fromRGB(224, 228, 238),
-        Accent           = Color3.fromRGB(0, 150, 240),
-        AccentDark       = Color3.fromRGB(0, 110, 180),
-        AccentGradient   = Color3.fromRGB(90, 110, 230),
+        Accent           = Color3.fromRGB(0, 170, 255),
+        AccentDark       = Color3.fromRGB(0, 140, 230),
+        AccentGradient   = Color3.fromRGB(0, 170, 255),
         Text             = Color3.fromRGB(25, 28, 36),
         TextMuted        = Color3.fromRGB(105, 112, 128),
         TextDim          = Color3.fromRGB(150, 155, 168),
         Stroke           = Color3.fromRGB(216, 222, 234),
         StrokeHover      = Color3.fromRGB(190, 198, 214),
-        StrokeActive     = Color3.fromRGB(0, 150, 240),
+        StrokeActive     = Color3.fromRGB(0, 170, 255),
         Success          = Color3.fromRGB(40, 180, 100),
         Warning          = Color3.fromRGB(240, 160, 30),
         Error            = Color3.fromRGB(240, 70, 70),
@@ -393,7 +380,7 @@ function ZypheraxUI:Notify(cfg)
         Size = UDim2.new(1, 0, 0, 0),
         AutomaticSize = Enum.AutomaticSize.Y,
         BackgroundColor3 = T.Surface,
-        BackgroundTransparency = 0.08,
+        BackgroundTransparency = 0.02,
         BorderSizePixel = 0,
         ClipsDescendants = true,
         Parent = wrap
@@ -487,7 +474,7 @@ function ZypheraxUI:Notify(cfg)
     local track = U.New("Frame", {
         Size = UDim2.new(1, 0, 0, 2),
         BackgroundColor3 = T.Stroke,
-        BackgroundTransparency = 0.5,
+        BackgroundTransparency = 0.12,
         BorderSizePixel = 0,
         LayoutOrder = 3,
         Parent = body
@@ -539,13 +526,9 @@ function ZypheraxUI:Watermark(cfg)
     }
 end
 
--- // FLOATING TOGGLE (Logo Z origami VEKTOR + drag bebas anti-seret) \ --
--- PENTING: Roblox TIDAK bisa memuat gambar dari URL external (imgur/github/dll),
--- jadi logo Z dibuat dari KODE (gradient) -> pasti tampil tanpa internet.
--- Kalau mau pakai gambar asli: upload logo.png di create.roblox.com -> Decal,
--- lalu isi ORB_ASSET_ID dengan aset ID-nya (contoh: "1234567890").
-local ORB_ASSET_ID  = "" -- "" = pakai logo vektor; isi aset ID utk gambar asli
-local ORB_URL_IMGUR = "https://i.imgur.com/6FVu1WJ.png" -- layer bonus (kalau didukung executor)
+-- // FLOATING TOGGLE (Logo murni rbxassetid, bg hitam, tanpa garis) \ --
+-- Logo = aset Roblox murni (tanpa lapisan Z vektor / URL external).
+local ORB_ASSET_ID = "106764279090045"
 local FloatingToggleGui = nil
 local FloatingButton    = nil
 local FloatingContainer = nil
@@ -569,13 +552,13 @@ local function EnsureFloatingButton(onToggleWindow)
         Parent          = GetCore()
     })
 
-    -- Tombol lingkaran bersih (tanpa glow/bayangan)
+    -- Tombol lingkaran: background HITAM, TANPA stroke/garis pinggiran
     FloatingButton = U.New("ImageButton", {
         Name                   = "FloatingCircleBtn",
         Size                   = UDim2.new(0, 56, 0, 56),
         Position               = UDim2.new(0, 20, 0, 20),
-        BackgroundColor3       = T.Background2,
-        BackgroundTransparency = 0.05,
+        BackgroundColor3       = Color3.fromRGB(0, 0, 0),
+        BackgroundTransparency = 0.12,
         Image                  = "",
         AutoButtonColor        = false,
         Visible                = false,
@@ -584,63 +567,17 @@ local function EnsureFloatingButton(onToggleWindow)
         Parent                 = FloatingToggleGui
     })
     U.Corner(FloatingButton, UDim.new(1, 0))
-    local ftStroke = U.Stroke(FloatingButton, T.Accent, 1.5, 0.25)
 
-    -- [LAYER 1] LOGO VEKTOR origami-Z (SELALU tampil, dibuat dari kode)
-    local orbBg = U.New("Frame", {
-        Name             = "OrbVectorBg",
-        Size             = UDim2.new(1, 0, 1, 0),
-        BackgroundColor3 = Color3.fromRGB(12, 60, 110),
-        BorderSizePixel  = 0,
-        ZIndex           = 10,
-        Parent           = FloatingButton
-    })
-    U.Corner(orbBg, UDim.new(1, 0))
-    U.New("UIGradient", {
-        Color    = ColorSequence.new(Color3.fromRGB(0, 200, 255), Color3.fromRGB(8, 24, 56)),
-        Rotation = 45,
-        Parent   = orbBg
-    })
-    local orbZ = U.New("TextLabel", {
-        Name                   = "OrbVectorZ",
-        Text                   = "Z",
-        Font                   = T.FontBold,
-        TextSize               = 30,
-        TextColor3             = Color3.fromRGB(235, 252, 255),
-        BackgroundTransparency = 1,
-        Size                   = UDim2.new(1, 0, 1, 0),
-        ZIndex                 = 11,
-        Parent                 = FloatingButton
-    })
-    U.New("UIGradient", {
-        Color    = ColorSequence.new(Color3.fromRGB(170, 245, 255), Color3.fromRGB(0, 140, 255)),
-        Rotation = 90,
-        Parent   = orbZ
-    })
-
-    -- [LAYER 2] Gambar URL (bonus: hanya tampil kalau executor/engine mengizinkan)
+    -- LOGO MURNI (aset Roblox) - satu-satunya isi tombol
     U.New("ImageLabel", {
-        Name                   = "FloatingLogoUrl",
+        Name                   = "FloatingLogo",
         Size                   = UDim2.new(1, 0, 1, 0),
         Position               = UDim2.new(0, 0, 0, 0),
         BackgroundTransparency = 1,
-        Image                  = ORB_URL_IMGUR,
-        ZIndex                 = 12,
+        Image                  = "rbxassetid://" .. ORB_ASSET_ID,
+        ZIndex                 = 11,
         Parent                 = FloatingButton
     })
-
-    -- [LAYER 3] Gambar asli via ASET ROBLOX (paling atas, aktif jika ORB_ASSET_ID diisi)
-    if ORB_ASSET_ID ~= "" then
-        U.New("ImageLabel", {
-            Name                   = "FloatingLogo",
-            Size                   = UDim2.new(1, 0, 1, 0),
-            Position               = UDim2.new(0, 0, 0, 0),
-            BackgroundTransparency = 1,
-            Image                  = "rbxassetid://" .. ORB_ASSET_ID,
-            ZIndex                 = 13,
-            Parent                 = FloatingButton
-        })
-    end
 
     -- // DRAG BEBAS 2D: global listener, tanpa kunci sumbu, semua Vector2 \ --
     local dragging    = false
@@ -705,12 +642,12 @@ local function EnsureFloatingButton(onToggleWindow)
         end
     end)
 
-    -- Hover: stroke menyala halus
+    -- Hover halus: background sedikit lebih terang (tanpa garis stroke)
     FloatingButton.MouseEnter:Connect(function()
-        U.Tween(ftStroke, 0.15, { Color = Color3.fromRGB(0, 220, 255), Transparency = 0, Thickness = 2 })
+        U.Tween(FloatingButton, 0.15, { BackgroundTransparency = 0.05 })
     end)
     FloatingButton.MouseLeave:Connect(function()
-        U.Tween(ftStroke, 0.25, { Color = T.Accent, Transparency = 0.25, Thickness = 1.5 })
+        U.Tween(FloatingButton, 0.25, { BackgroundTransparency = 0.15 })
     end)
 
     FloatingContainer = FloatingButton
@@ -721,7 +658,7 @@ end
 function ZypheraxUI:CreateWindow(config)
     config = config or {}
     local title   = config.Title or config.Name or "Zypherax Hub"
-    local sub     = config.Description or config.SubName or "Violence District"
+    local sub     = config.Description or config.SubName or "Ride A Pet"
     local size    = config.Size or UDim2.fromOffset(760, 560)
     local keybind = config.Keybind or Enum.KeyCode.RightControl
 
@@ -754,15 +691,30 @@ function ZypheraxUI:CreateWindow(config)
         Name = "MainWindow",
         Size = UDim2.fromScale(1, 1),
         BackgroundColor3 = T.Background,
-        BackgroundTransparency = 0.04,
+        BackgroundTransparency = 0.02,
         ClipsDescendants = true,
         ZIndex = 1,
         Parent = shadow
     })
     U.Corner(main, T.CornerLg)
-    local mainStroke = U.Stroke(main, T.Stroke, 1.2, 0)
+    -- // BACKGROUND WATERMARK (logo samar elegant) \
+    pcall(function()
+        local bgwm = U.New("ImageLabel", {
+            Name = "BackgroundWatermark",
+            Image = "rbxassetid://106764279090045",
+            BackgroundTransparency = 1,
+            ImageTransparency = 0.87,
+            ScaleType = Enum.ScaleType.Fit,
+            AnchorPoint = Vector2.new(0.5, 0.5),
+            Position = UDim2.new(0.60, 0, 0.55, 0),
+            Size = UDim2.fromOffset(460, 460),
+            ZIndex = 1,
+            Parent = main
+        })
+    end)
+--     local mainStroke = U.Stroke(main, T.Stroke, 1.2, 0)
     RegisterThemeColor(main, "BackgroundColor3", "Background")
-    RegisterThemeColor(mainStroke, "Color", "Stroke")
+--     RegisterThemeColor(mainStroke, "Color", "Stroke")
 
     -- Window Object
     local Win = { Tabs = {}, Pages = {}, _currentTab = nil, _connections = connections, _gui = gui }
@@ -783,16 +735,16 @@ function ZypheraxUI:CreateWindow(config)
     RegisterThemeColor(sidebar, "BackgroundColor3", "SidebarBg")
 
     -- Right border separator of sidebar
-    local sideDiv = U.New("Frame", {
-        Size = UDim2.new(0, 1, 1, 0),
-        Position = UDim2.new(1, 0, 0, 0),
-        BackgroundColor3 = T.Stroke,
-        BorderSizePixel = 0,
-        ZIndex = 3,
-        Parent = sidebar
-    })
-    RegisterThemeColor(sideDiv, "BackgroundColor3", "Stroke")
-
+--     local sideDiv = U.New("Frame", {
+--         Size = UDim2.new(0, 1, 1, 0),
+--         Position = UDim2.new(1, 0, 0, 0),
+--         BackgroundColor3 = T.Stroke,
+--         BorderSizePixel = 0,
+--         ZIndex = 3,
+--         Parent = sidebar
+--     })
+--     RegisterThemeColor(sideDiv, "BackgroundColor3", "Stroke")
+-- 
     -- // SIDEBAR HEADER (MacOS Traffic Lights + Titles) \ --
     local sidebarHeader = U.New("Frame", {
         Name = "SidebarHeader",
@@ -802,7 +754,7 @@ function ZypheraxUI:CreateWindow(config)
         Parent = sidebar
     })
 
-    -- MacOS Traffic Light Buttons (🔴 Red, 🟡 Yellow, 🟢 Green - Compact)
+    -- MacOS Traffic Light Buttons (ðŸ”´ Red, ðŸŸ¡ Yellow, ðŸŸ¢ Green - Compact)
     local trafficContainer = U.New("Frame", {
         Name = "MacOSTrafficLights",
         Size = UDim2.new(0, 48, 0, 12),
@@ -841,17 +793,17 @@ function ZypheraxUI:CreateWindow(config)
         return dot
     end
 
-    -- 🔴 Close: smoothly closes window
+    -- ðŸ”´ Close: smoothly closes window
     makeTrafficDot(Color3.fromRGB(255, 95, 86), Color3.fromRGB(255, 120, 110), function()
         Win:ToggleVisibility(false)
     end)
 
-    -- 🟡 Minimize: minimizes window
+    -- ðŸŸ¡ Minimize: minimizes window
     makeTrafficDot(Color3.fromRGB(255, 189, 46), Color3.fromRGB(255, 210, 80), function()
         Win:ToggleVisibility(false)
     end)
 
-    -- 🟢 Maximize: toggles size
+    -- ðŸŸ¢ Maximize: toggles size
     local isMaximized = false
     makeTrafficDot(Color3.fromRGB(39, 201, 63), Color3.fromRGB(60, 225, 90), function()
         isMaximized = not isMaximized
@@ -860,20 +812,32 @@ function ZypheraxUI:CreateWindow(config)
     end)
 
     -- Window Title & Subtitle below traffic lights
+    local headLogo = U.New("ImageLabel", {
+        Name = "SidebarLogo",
+        Image = "rbxassetid://106764279090045",
+        BackgroundTransparency = 1,
+        ScaleType = Enum.ScaleType.Fit,
+        Position = UDim2.new(0, 14, 0, 30),
+        Size = UDim2.fromOffset(20, 20),
+        ZIndex = 6,
+        Parent = sidebarHeader
+    })
+    U.Corner(headLogo, UDim.new(0, 5))
     local titleLbl = U.New("TextLabel", {
         Text = string.upper(title),
         Font = T.FontBold,
         TextSize = 13,
         TextColor3 = T.Accent,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 14, 0, 32),
-        Size = UDim2.new(1, -24, 0, 16),
+        Position = UDim2.new(0, 40, 0, 30),
+        Size = UDim2.new(1, -50, 0, 16),
         TextXAlignment = Enum.TextXAlignment.Left,
         TextTruncate = Enum.TextTruncate.AtEnd,
         ZIndex = 5,
         Parent = sidebarHeader
     })
-    RegisterThemeColor(titleLbl, "TextColor3", "Accent")
+    titleLbl.TextColor3 = Color3.fromRGB(0, 170, 255) -- LOGOBLUE_TITLE: paksa biru logo
+    pcall(function() titleLbl.Font = Enum.Font.GothamBold end)
 
     local subLbl = U.New("TextLabel", {
         Text = sub,
@@ -881,8 +845,8 @@ function ZypheraxUI:CreateWindow(config)
         TextSize = 10,
         TextColor3 = T.TextMuted,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 14, 0, 48),
-        Size = UDim2.new(1, -24, 0, 14),
+        Position = UDim2.new(0, 40, 0, 46),
+        Size = UDim2.new(1, -50, 0, 14),
         TextXAlignment = Enum.TextXAlignment.Left,
         TextTruncate = Enum.TextTruncate.AtEnd,
         ZIndex = 5,
@@ -890,8 +854,8 @@ function ZypheraxUI:CreateWindow(config)
     })
     RegisterThemeColor(subLbl, "TextColor3", "TextMuted")
 
-    -- Horizontal divider under sidebar header
-    local hDiv = U.New("Frame", {
+    -- Horizontal divider under sidebar header (DIHAPUS: garis panjang dihilangkan)
+    --[[local hDiv = U.New("Frame", {
         Size = UDim2.new(1, -24, 0, 1),
         Position = UDim2.new(0, 12, 1, -1),
         BackgroundColor3 = T.Stroke,
@@ -899,9 +863,9 @@ function ZypheraxUI:CreateWindow(config)
         ZIndex = 4,
         Parent = sidebarHeader
     })
-    RegisterThemeColor(hDiv, "BackgroundColor3", "Stroke")
+    RegisterThemeColor(hDiv, "BackgroundColor3", "Stroke")--]]
 
-    -- // SMOOTH UNINTERRUPTED GLOBAL DRAGGING \ --
+        -- // SMOOTH UNINTERRUPTED GLOBAL DRAGGING \ --
     local dragging = false
     local dragStart, startPos = nil, nil
     track(sidebarHeader.InputBegan:Connect(function(inp)
@@ -956,7 +920,7 @@ function ZypheraxUI:CreateWindow(config)
         Size = UDim2.new(1, 0, 0, 54),
         Position = UDim2.new(0, 0, 1, -54),
         BackgroundColor3 = T.Surface,
-        BackgroundTransparency = 0.5,
+        BackgroundTransparency = 0.12,
         BorderSizePixel = 0,
         ZIndex = 4,
         Parent = sidebar
@@ -1008,7 +972,7 @@ function ZypheraxUI:CreateWindow(config)
     -- // ELEGANT TOP SEARCH ENGINE \ --
     local searchBarFrame = U.New("Frame", {
         Name = "TopSearchBar",
-        Size = UDim2.new(0, 320, 0, 32),
+        Size = UDim2.new(0, 240, 0, 32),
         Position = UDim2.new(0, 10, 0, 8),
         BackgroundColor3 = T.Surface2,
         BackgroundTransparency = 0.2,
@@ -1254,13 +1218,13 @@ function ZypheraxUI:CreateWindow(config)
                 Name = "SectionBox_" .. (displayName ~= "" and displayName or "Card"),
                 Size = UDim2.new(1, 0, 0, 0),
                 BackgroundColor3 = T.SectionBg,
+                BackgroundTransparency = 0.02,
                 AutomaticSize = Enum.AutomaticSize.Y,
                 ZIndex = 4,
                 Parent = targetCol
             })
             U.Corner(sectionBox, T.CornerMd)
             local sStroke = U.Stroke(sectionBox, T.Stroke, 1, 0.4)
-            RegisterThemeColor(sectionBox, "BackgroundColor3", "SectionBg")
             RegisterThemeColor(sStroke, "Color", "Stroke")
 
             -- Section Header Frame (Only visible if real name exists)
@@ -1312,7 +1276,7 @@ function ZypheraxUI:CreateWindow(config)
             U.New("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8), Parent = secContainer })
             U.New("UIPadding", { PaddingBottom = UDim.new(0, 10), Parent = secContainer })
 
-            local SectionObj = { _box = sectionBox, _name = displayName, _items = {} }
+            local SectionObj = { _box = sectionBox, _container = secContainer, _name = displayName, _items = {} }
             table.insert(tabEntry.sections, SectionObj)
 
             -- Header updater (Sets section title without duplicate labels)
@@ -1332,7 +1296,7 @@ function ZypheraxUI:CreateWindow(config)
                 local base = U.New(cls, {
                     Size = UDim2.new(1, 0, 0, height or 38),
                     BackgroundColor3 = T.Surface2,
-                    BackgroundTransparency = 0.25,
+                    BackgroundTransparency = 0.12,
                     BorderSizePixel = 0,
                     ZIndex = 5,
                     Parent = secContainer
@@ -1571,7 +1535,7 @@ function ZypheraxUI:CreateWindow(config)
                 })
 
                 local chevron = U.New("TextLabel", {
-                    Text = "▼",
+                    Text = "v",
                     Font = T.FontBold,
                     TextSize = 10,
                     TextColor3 = T.TextMuted,
@@ -1617,7 +1581,7 @@ function ZypheraxUI:CreateWindow(config)
                             isOpen = false
                             listFrame.Visible = false
                             U.Tween(base, 0.2, { Size = UDim2.new(1, 0, 0, 36) })
-                            chevron.Text = "▼"
+                            chevron.Text = "v"
                             pcall(cb, selected)
                             rebuild()
                         end))
@@ -1633,13 +1597,13 @@ function ZypheraxUI:CreateWindow(config)
                         local h = #items * 28 + 4
                         U.Tween(base, 0.2, { Size = UDim2.new(1, 0, 0, 42 + h) })
                         U.Tween(listFrame, 0.2, { Size = UDim2.new(1, -16, 0, h) })
-                        chevron.Text = "▲"
+                        chevron.Text = "^"
                     else
                         U.Tween(base, 0.2, { Size = UDim2.new(1, 0, 0, 36) })
                         U.Tween(listFrame, 0.2, { Size = UDim2.new(1, -16, 0, 0) }).Completed:Connect(function()
                             listFrame.Visible = false
                         end)
-                        chevron.Text = "▼"
+                        chevron.Text = "v"
                     end
                 end))
 
@@ -1760,12 +1724,15 @@ function ZypheraxUI:CreateWindow(config)
 
             -- // LABEL \ --
             function SectionObj:CreateLabel(textOrCfg)
+                local _isGrp = false
                 local txt = type(textOrCfg) == "table" and (textOrCfg.Name or textOrCfg.Text or textOrCfg[1]) or tostring(textOrCfg)
+                local _isGrp = type(txt)=="string" and txt==txt:upper() and #txt>=4
+                local _isGrp2 = type(txt)=="string" and txt==txt:upper() and #txt>=4
                 local lbl = U.New("TextLabel", {
                     Text = txt,
-                    Font = T.FontRegular,
-                    TextSize = 11,
-                    TextColor3 = T.TextMuted,
+                    Font = (_isGrp and T.FontBold or T.FontRegular),
+                    TextSize = (_isGrp and 12 or 11),
+                    TextColor3 = (_isGrp and T.Text or T.TextMuted),
                     BackgroundTransparency = 1,
                     Size = UDim2.new(1, 0, 0, 0),
                     AutomaticSize = Enum.AutomaticSize.Y,
@@ -1871,7 +1838,7 @@ function ZypheraxUI:CreateWindow(config)
                     Size = UDim2.new(1, 0, 0, 0),
                     AutomaticSize = Enum.AutomaticSize.Y,
                     BackgroundColor3 = T.Surface,
-                    BackgroundTransparency = 0.3,
+                    BackgroundTransparency = 0.02,
                     ZIndex = 5,
                     Parent = secContainer
                 })
@@ -1889,7 +1856,7 @@ function ZypheraxUI:CreateWindow(config)
                 -- Title
                 local topRow = U.New("Frame", { Size = UDim2.new(1, 0, 0, 20), BackgroundTransparency = 1, Parent = confBox })
                 U.New("TextLabel", {
-                    Text = "⚙  Config Manager",
+                    Text = "âš™  Config Manager",
                     Font = T.FontBold,
                     TextSize = 13,
                     TextColor3 = T.Accent,
